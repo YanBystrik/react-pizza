@@ -1,6 +1,23 @@
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSort, sortSelector } from '../redux/slices/filterSlice';
+
+import { list } from './constants.js';
+
 export const Sort = () => {
+  const dispatch = useDispatch();
+  const sort = useSelector(sortSelector);
+  const sortRef = React.useRef({});
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleSort = (object) => {
+    dispatch(setSort(object));
+    setOpen(false);
+  };
+
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           width="10"
@@ -14,15 +31,22 @@ export const Sort = () => {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span>популярности</span>
+        <span onClick={() => setOpen(!open)}>{sort.name}</span>
       </div>
-      <div className="sort__popup">
-        <ul>
-          <li className="active">популярности</li>
-          <li>цене</li>
-          <li>алфавиту</li>
-        </ul>
-      </div>
+      {open && (
+        <div className="sort__popup">
+          <ul>
+            {list.map((object, index) => (
+              <li
+                key={index}
+                onClick={() => handleSort(object)}
+                className={sort.sortProperty === object.sortProperty ? 'active' : ''}>
+                {object.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
